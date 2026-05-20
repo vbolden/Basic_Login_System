@@ -23,12 +23,16 @@ const userSchema = new mongoose.Schema({
 
 // PRE-SAVE TO CREATE PASSWORD
 userSchema.pre("save", async function (next) {
-    if(this.isModified("password") || this.isNew) {
+    if (this.isModified("password") || this.isNew) {
         const saltRounds = 10;
         this.password = await bcrypt.hash(this.password, saltRounds);
     }
     next();
 });
+
+userSchema.methods.isCorrectPassword = async function (password) {
+    return bcrypt.compare(password, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
