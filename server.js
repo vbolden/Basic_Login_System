@@ -2,24 +2,24 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const mongoose = require('mongoose');
-const PORT = process.env.PORT;
-const secret = process.env.JWT_SECRET;
+const PORT = process.env.PORT || 3000;
+const userRouter = require('./routes/userRoutes');
 
 // DATABASE CONNECTION
-mongoose.connect(process.env.MONGODB_URI);
-
-const connectdb = mongoose.connection;
-connectdb.on('error', (err) => console.log(err.message + ' is mongo not running?'));
-connectdb.on('connected', () => console.log('mongo connected'));
-connectdb.on('disconnected', () => console.log('mongo disconnected'));
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('Mongo connected'))
+    .catch((error) => console.log(error.message));
 
 
 // MIDDLEWARE
+app.use(express.json());
 
 // ROUTES
 // app.get("/", (req, res) => {
 //     res.send("TEST ROUTE");
 // });
+// USERROUTER MOUNT
+app.use("/api/users", userRouter);
 
 // PORT
 app.listen(PORT, (req, res) => {
